@@ -112,7 +112,7 @@ async def metabase_bulk_request(url: str, session: str, bulk_field_slug: str, bu
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain/question/83789-test-api?run=1'
+    url = 'https://your-domain.com/question/83789-test-api?run=1'
     bulk_field_slug = 'tracking_id'
     bulk_values_list = []
     result = asyncio.run(metabase_bulk_request(url=url, session=session, bulk_field_slug=bulk_field_slug, bulk_values_list=bulk_values_list))
