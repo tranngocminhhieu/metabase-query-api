@@ -12,6 +12,7 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
     :param question_id: 123456
     :param session: Metabase Session
     :param params: {'parameters': json.dumps(params)}
+    :param verbose: Print progress or not
     :return: JSON data
     '''
 
@@ -55,12 +56,13 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
 def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose = True):
     '''
-    This function support for export_question and metabase_bulk_request
+    This function support for export_question and export_question_bulk_param_values
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
     :param bulk_field_slug: The query name in URL that you want to add and filter values run in bulk
-    :return: A JSON data of headers, question_id, params, domain_url
+    :param verbose: Print progress or not
+    :return: A JSON data that support for export functions
     '''
 
     if verbose:
@@ -131,6 +133,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     :param session: Metabase Session
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :param data_format: json, csv, xlsx
+    :param verbose: Print progress or not
     :return: JSON data or Bytes data
     '''
 
