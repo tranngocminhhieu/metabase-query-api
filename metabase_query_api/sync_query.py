@@ -5,7 +5,7 @@ import requests
 from tenacity import *
 
 
-def export_query(domain_url: str, question_id, session: str, params: dict, data_format='json', timeout=1800):
+def export_query(domain_url: str, question_id, session: str, params: dict, data_format='json', timeout=1800, verbose=True):
     '''
 
     :param domain_url: https://your-domain.com
@@ -14,7 +14,9 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
     :param params: {'parameters': json.dumps(params)}
     :return: JSON data
     '''
-    print('Sending request')
+
+    if verbose:
+        print('Sending request')
 
     content_type_values = {
         'json': 'application/json',
@@ -51,7 +53,7 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
-def parse_question(url: str, session: str, bulk_field_slug: str = None):
+def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose = True):
     '''
     This function support for export_question and metabase_bulk_request
 
@@ -60,7 +62,9 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None):
     :param bulk_field_slug: The query name in URL that you want to add and filter values run in bulk
     :return: A JSON data of headers, question_id, params, domain_url
     '''
-    print('Parsing URL and verifying Metabase Session')
+
+    if verbose:
+        print('Parsing URL and verifying Metabase Session')
 
     headers = {'Content-Type': 'application/json', 'X-Metabase-Session': session}
 
@@ -120,7 +124,7 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None):
     return card_data
 
 
-def export_question(url: str, session: str, data_format='json', retry_attempts=0):
+def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True):
     '''
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
@@ -134,7 +138,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
         raise ValueError('Accepted values for data_format are json, xlsx, csv')
 
     # Parse question
-    card_data = parse_question(url=url, session=session)
+    card_data = parse_question(url=url, session=session, verbose=verbose)
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
@@ -144,7 +148,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     # Handle retry due to server slowdown
     @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
     def get_query_data():
-        return export_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)}, data_format=data_format)
+        return export_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)}, data_format=data_format, verbose=verbose)
 
     # Get data
     query_data = get_query_data()
@@ -157,7 +161,8 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     if data_format == 'json':
         query_data = [{col: item[col] for col in column_sort_order} for item in query_data]
 
-    print('Received data')
+    if verbose:
+        print('Received data')
 
     return query_data
 

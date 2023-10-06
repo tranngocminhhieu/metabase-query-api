@@ -13,7 +13,7 @@ else:
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def async_query(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None):
+async def async_query(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None, verbose=True):
     '''
     This function return maximum 2000 rows data
     :param client_session: asyncio client session
@@ -22,9 +22,12 @@ async def async_query(client_session: object, domain_url: str, question_id, head
     :param headers:
     :param request_data: json.dumps({'parameters': modified_params})
     :param print_suffix: String
+    :param verbose: Print progress or not
     :return: JSON data
     '''
-    print('Sending request', print_suffix)
+
+    if verbose:
+        print('Sending request', print_suffix)
 
     query_res = await client_session.post(url=f'{domain_url}/api/card/{question_id}/query', headers=headers, data=request_data, timeout=1800)
 
@@ -51,7 +54,7 @@ async def async_query(client_session: object, domain_url: str, question_id, head
     return query_records
 
 
-async def export_question_bulk_param_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
+async def export_question_bulk_param_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True):
     '''
     This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
 
@@ -63,6 +66,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
     :param bulk_values_list: A list of values that you want to add to filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
+    :param verbose: Print progress or not
     :return: JSON data
     '''
 
@@ -70,7 +74,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
         raise ValueError('chunk_size must be positive and not greater than 2000')
 
     # Parse question
-    card_data = parse_question(url=url, session=session, bulk_param_slug=bulk_param_slug)
+    card_data = parse_question(url=url, session=session, bulk_param_slug=bulk_param_slug, verbose=verbose)
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
@@ -99,7 +103,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
     # Handle retry due to server slowdown
-    async def query_quest(print_suffix=None):
+    async def query_quest(print_suffix=None, verbose=True):
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
             return await async_query(client_session=client_session,
@@ -107,7 +111,8 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
                                      question_id=question_id,
                                      headers=headers,
                                      request_data=json.dumps({'parameters': modified_params}),
-                                     print_suffix=print_suffix)
+                                     print_suffix=print_suffix,
+                                     verbose=verbose)
 
         query_records = await get_query_data()
 
@@ -116,7 +121,8 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
 
         query_records = [{col: item[col] for col in column_sort_order} for item in query_records]
 
-        print('Received data', print_suffix)
+        if verbose:
+            print('Received data', print_suffix)
 
         return query_records
 
@@ -126,7 +132,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
     counter = 0
     for modified_params in modified_params_list:
         counter += 1
-        tasks.append(asyncio.create_task(query_quest(print_suffix=f'({counter}/{total})')))
+        tasks.append(asyncio.create_task(query_quest(print_suffix=f'({counter}/{total})', verbose=verbose)))
         await asyncio.sleep(1)
 
     # Combine tasks results
