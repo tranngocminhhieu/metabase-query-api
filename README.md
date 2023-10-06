@@ -1,4 +1,9 @@
 # Metabase Query API
+[![Downloads](https://img.shields.io/pypi/dm/metabase-query-api)](https://pypi.org/project/metabase-query-api)
+[![Pypi](https://img.shields.io/pypi/v/metabase-query-api)](https://pypi.org/project/metabase-query-api)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/tranngocminhhieu/metabase-query-api/issues)
+[![MIT](https://img.shields.io/github/license/tranngocminhhieu/metabase-query-api)](https://github.com/tranngocminhhieu/metabase-query-api/blob/main/LICENSE)
+
 This package will help Data workers get data from [Metabase](https://www.metabase.com/) questions more easily and effectively. It only focuses on the [Card Query API](https://www.metabase.com/docs/latest/api/card#post-apicardcard-idqueryexport-format) and does not include other Metabase APIs.
 
 ## Features (pros)
