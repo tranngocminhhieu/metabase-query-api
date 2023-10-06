@@ -1,5 +1,5 @@
 # Metabase Query API
-Metabase Query API with Retry and Bulk Filter Values.
+This package will help Data workers get data from [Metabase](https://www.metabase.com/) questions more easily and effectively. It only focuses on the [Card Query API](https://www.metabase.com/docs/latest/api/card#post-apicardcard-idqueryexport-format) and does not include other Metabase APIs.
 
 ## Features (pros)
 1. Get question data in any data format provided by Metabase (JSON, CSV, XLSX).
@@ -7,10 +7,11 @@ Metabase Query API with Retry and Bulk Filter Values.
 3. JSON results have the same column sort order as the browser.
 4. Automatically check if Metabase session is available.
 5. Allow retry if an error occurs due to server slowdown.
-6. Allows entering multiple filter values in bulk, suitable for retrieving data for large number of ids, using asyncio technique.
+6. Allows entering multiple filter values in bulk, suitable for retrieving data for large number of ids, using `asyncio` technique.
 
 ## Cons
 1. Unsaved question URLs are not supported yet.
+2. Bulk filter values with `asyncio` only supports SQL query questions.
 
 ## Installation
 ```commandline
