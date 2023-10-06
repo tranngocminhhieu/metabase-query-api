@@ -55,14 +55,14 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
     '''
     This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
 
-    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values())
+    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values()).
 
     :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
     :param session: Metabase Session
     :param bulk_field_slug: The field filter slug, get it in URL on browser
     :param bulk_values_list: A list of values that you want to add to filter
     :param chunk_size: Maximum is 2000
-    :param retry_attempts: Number of retry attempts when error by server slowing
+    :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :return: JSON data
     '''
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
@@ -73,6 +73,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
     question_id = card_data['question_id']
     headers = card_data['headers']
     params = card_data['params']
+    column_sort_order = card_data['column_sort_order']
 
     # Create a list of modified params
     bulk_values_lists = [bulk_values_list[i:i + chunk_size] for i in range(0, len(bulk_values_list), chunk_size)]
@@ -95,16 +96,18 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
             return await async_query(client_session=client_session,
-                                              domain_url=domain_url,
-                                              question_id=question_id,
-                                              headers=headers,
-                                              request_data=json.dumps({'parameters': modified_params}),
-                                              print_suffix=print_suffix)
+                                     domain_url=domain_url,
+                                     question_id=question_id,
+                                     headers=headers,
+                                     request_data=json.dumps({'parameters': modified_params}),
+                                     print_suffix=print_suffix)
 
         query_records = await get_query_data()
 
         if 'error' in query_records:
             raise Exception(query_records['error'])
+
+        query_records = [{col: item[col] for col in column_sort_order} for item in query_records]
 
         print('Received data', print_suffix)
 
@@ -122,6 +125,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
     await client_session.close()
 
     return sum(res, [])
+
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
