@@ -63,6 +63,8 @@ It will split your list of values into multiple parts, each containing up to 200
 
 It then sends multiple asynchronous requests to get the data. Once completed, the data pieces will be merged into one.
 
+**Note:** Using this function may slow down your Metabase server.
+
 **Special parameters:**
 - `bulk_param_slug` is the parameters slug in URL.
 - `bulk_values_list` is a list of values.
