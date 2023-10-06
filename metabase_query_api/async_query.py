@@ -51,7 +51,7 @@ async def async_query(client_session: object, domain_url: str, question_id, head
     return query_records
 
 
-async def export_question_bulk_filter_values(url: str, session: str, bulk_field_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
+async def export_question_bulk_filter_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
     '''
     This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
 
@@ -59,7 +59,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
 
     :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
     :param session: Metabase Session
-    :param bulk_field_slug: The field filter slug, get it in URL on browser
+    :param bulk_param_slug: The field filter slug, get it in URL on browser
     :param bulk_values_list: A list of values that you want to add to filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
@@ -67,7 +67,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
     '''
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
-    card_data = parse_question(url=url, session=session, bulk_field_slug=bulk_field_slug)
+    card_data = parse_question(url=url, session=session, bulk_param_slug=bulk_param_slug)
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
@@ -82,7 +82,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
     for bulk_values in bulk_values_lists:
         modified_params = []
         for param in params:
-            if param['target'][-1][-1] == bulk_field_slug:
+            if param['target'][-1][-1] == bulk_param_slug:
                 modified_params.append({
                     'type': param['type'],
                     'value': bulk_values,
@@ -130,7 +130,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_field_
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
     url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
-    bulk_field_slug = 'id'
+    bulk_param_slug = 'id'
     bulk_values_list = []
-    result = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_field_slug=bulk_field_slug, bulk_values_list=bulk_values_list))
+    result = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
     print(len(result))
