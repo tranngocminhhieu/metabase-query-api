@@ -27,7 +27,7 @@ import asyncio
 #### Export question data to a JSON variable
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
 
 question_json_data = export_question(url=url, session=session, retry_attempts=5)
 ```

@@ -55,7 +55,7 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None):
     '''
     This function support for export_question and metabase_bulk_request
 
-    :param url: 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+    :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
     :param bulk_field_slug: The query name in URL that you want to add and filter values run in bulk
     :return: A JSON data of headers, question_id, params, domain_url
@@ -123,7 +123,7 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None):
 def export_question(url: str, session: str, data_format='json', retry_attempts=0):
     '''
 
-    :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
+    :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :param data_format: json, csv, xlsx
@@ -155,6 +155,6 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+    url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
     query_data = export_question(url=url, session=session, retry_attempts=5)
     print(query_data)

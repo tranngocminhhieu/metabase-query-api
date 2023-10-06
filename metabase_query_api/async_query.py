@@ -57,7 +57,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
 
     To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values()).
 
-    :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
+    :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
     :param bulk_param_slug: The field filter slug, get it in URL on browser
     :param bulk_values_list: A list of values that you want to add to filter
@@ -129,7 +129,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+    url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
     bulk_param_slug = 'id'
     bulk_values_list = []
     result = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
