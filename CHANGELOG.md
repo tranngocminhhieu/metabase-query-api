@@ -1,3 +1,6 @@
+# 1.0.1
+Change function name from `export_question_bulk_filter_values` to `export_question_bulk_param_values`
+
 # 1.0.0
 1. Get question data in any data format provided by Metabase (JSON, CSV, XLSX).
 2. Input question URL and Metabase Session, no need to provide parameters payload.

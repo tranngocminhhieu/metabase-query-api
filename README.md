@@ -12,11 +12,11 @@ This package will help Data workers get data from [Metabase](https://www.metabas
 3. JSON results have the same column sort order as the browser.
 4. Automatically check if Metabase session is available.
 5. Allow retry if an error occurs due to server slowdown.
-6. Allows entering multiple filter values in bulk, suitable for retrieving data for large number of ids, using `asyncio` technique.
+6. Allows entering multiple param values in bulk, suitable for retrieving data for large number of ids, using `asyncio` technique.
 
 ## Cons
 1. Unsaved question URLs are not supported yet.
-2. Bulk filter values with `asyncio` only supports SQL query questions.
+2. Bulk param values with `asyncio` only supports SQL query questions.
 
 ## Installation
 ```commandline
@@ -28,12 +28,12 @@ pip install metabase-query-api
 ### Import package
 ```python
 from metabase_query_api.sync_query import export_question
-from metabase_query_api.async_query import export_question_bulk_filter_values
+from metabase_query_api.async_query import export_question_bulk_param_values
 import asyncio
 ```
 
 ### Get question data
-- Copy the question URL in the browser, note that you must fill in the necessary filters before copying.
+- Copy the question URL in the browser, note that you must fill in the necessary params before copying.
 - Use a different API to get the [Metabase Session](https://www.metabase.com/docs/latest/api/session#post-apisession). Or you can use this [Chrome extension](https://chrome.google.com/webstore/detail/cookie-tab-viewer/fdlghnedhhdgjjfgdpgpaaiddipafhgk) to get it.
 
 **Special parameters:**
@@ -62,7 +62,7 @@ with open('CSV_file.csv', 'wb') as file:
     file.write(question_csv_data)
 ```
 
-### Get question data with multiple filter values in bulk
+### Get question data with bulk param values
 This function is suitable for retrieving data with a large number of values that need to be filled in a param, usually an id field.
 
 It will split your list of values into multiple parts, each containing up to 2000 values.
@@ -82,5 +82,5 @@ url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing
 bulk_param_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
-question_json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
+question_json_data = asyncio.run(export_question_bulk_param_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
 ```

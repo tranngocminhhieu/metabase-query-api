@@ -51,11 +51,11 @@ async def async_query(client_session: object, domain_url: str, question_id, head
     return query_records
 
 
-async def export_question_bulk_filter_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
+async def export_question_bulk_param_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
     '''
     This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
 
-    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values()).
+    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_param_values()).
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
@@ -141,5 +141,5 @@ if __name__ == '__main__':
     url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
     bulk_param_slug = 'id'
     bulk_values_list = []
-    result = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
+    result = asyncio.run(export_question_bulk_param_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
     print(len(result))

@@ -5,8 +5,8 @@ README = (Path(__file__).parent / "README.md").read_text()
 
 setup(
     name='metabase-query-api',
-    version='1.0.0',
-    description='Metabase Query API with Retry and Bulk Filter Values',
+    version='1.0.1',
+    description='Metabase Query API with Retry and Bulk Param Values',
     long_description=README,
     long_description_content_type="text/markdown",
     url='https://github.com/tranngocminhhieu/metabase-query-api',
