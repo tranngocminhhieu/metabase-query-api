@@ -12,11 +12,11 @@ This package will help Data workers get data from [Metabase](https://www.metabas
 3. JSON results have the same column sort order as the browser.
 4. Automatically check if Metabase session is available.
 5. Allow retry if an error occurs due to server slowdown.
-6. Allows entering multiple param values in bulk, suitable for retrieving data for large number of ids, using `asyncio` technique.
+6. Allows entering multiple param values in bulk, suitable for retrieving data for a large number of ids, using `asyncio` technique.
 
 ## Cons
 1. Unsaved question URLs are not supported yet.
-2. Bulk param values with `asyncio` only supports SQL query questions.
+2. Bulk param values with `asyncio` only support SQL query questions.
 
 ## Installation
 ```commandline
@@ -48,7 +48,7 @@ url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing
 question_json_data = export_question(url=url, session=session, retry_attempts=5)
 ```
 
-#### Export question data to a Excel file
+#### Export question data to an Excel file
 ```python
 question_xlsx_data = export_question(url=url, session=session, data_format='xlsx', retry_attempts=5)
 with open('Excel_file.xlsx', 'wb') as file:
@@ -74,7 +74,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 **Special parameters:**
 - `bulk_param_slug` is the parameters slug in URL.
 - `bulk_values_list` is a list of values.
-- `chunk_size` default and maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
+- `chunk_size` default and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
