@@ -129,6 +129,11 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     :param data_format: json, csv, xlsx
     :return: JSON data or Bytes data
     '''
+
+    if data_format not in ['json', 'xlsx', 'csv']:
+        raise ValueError('Accepted values for data_format are json, xlsx, csv')
+
+    # Parse question
     card_data = parse_question(url=url, session=session)
 
     domain_url = card_data['domain_url']
@@ -136,15 +141,19 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     params = card_data['params']
     column_sort_order = card_data['column_sort_order']
 
+    # Handle retry due to server slowdown
     @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
     def get_query_data():
         return export_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)}, data_format=data_format)
 
+    # Get data
     query_data = get_query_data()
 
+    # Check error by user
     if type(query_data) == dict and 'error' in query_data:
         raise Exception(query_data['error'])
 
+    # Order columns for JSON data
     if data_format == 'json':
         query_data = [{col: item[col] for col in column_sort_order} for item in query_data]
 

@@ -13,6 +13,9 @@ Metabase Query API with Retry and Bulk Filter Values.
 1. Unsaved question URLs are not supported yet.
 
 ## Installation
+```commandline
+pip install metabase-query-api
+```
 
 
 ## Instruction
@@ -24,7 +27,14 @@ import asyncio
 ```
 
 ### Get question data
+- Copy the question URL in the browser, note that you must fill in the necessary filters before copying.
+- Use a different API to get the [Metabase Session](https://www.metabase.com/docs/latest/api/session#post-apisession). Or you can use this [Chrome extension](https://chrome.google.com/webstore/detail/cookie-tab-viewer/fdlghnedhhdgjjfgdpgpaaiddipafhgk) to get it.
+
+**Special parameters:**
+- `retry_attempts` defaults to `0`, use it when your Metabase server is often slow.
+- `data_format` defaults to `'json'`, accepted values are `'json'`, `'csv'`, `'xlsx'`.
 #### Export question data to a JSON variable
+
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
 url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
@@ -47,10 +57,22 @@ with open('CSV_file.csv', 'wb') as file:
 ```
 
 ### Get question data with multiple filter values in bulk
+This function is suitable for retrieving data with a large number of values that need to be filled in a param, usually an id field.
 
+It will split your list of values into multiple parts, each containing up to 2000 values.
+
+It then sends multiple asynchronous requests to get the data. Once completed, the data pieces will be merged into one.
+
+**Special parameters:**
+- `bulk_param_slug` is the parameters slug in URL.
+- `bulk_values_list` is a list of values.
+- `chunk_size` default and maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
+- `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
 ```python
+session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
+url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
 bulk_param_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
-question_json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
+question_json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
 ```

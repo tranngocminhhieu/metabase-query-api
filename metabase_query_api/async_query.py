@@ -65,8 +65,11 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :return: JSON data
     '''
-    client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
+    if chunk_size > 2000 or chunk_size < 1:
+        raise ValueError('chunk_size must be positive and not greater than 2000')
+
+    # Parse question
     card_data = parse_question(url=url, session=session, bulk_param_slug=bulk_param_slug)
 
     domain_url = card_data['domain_url']
@@ -92,6 +95,10 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
                 modified_params.append(param.copy())
         modified_params_list.append(modified_params)
 
+    # Client session for requesting
+    client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
+
+    # Handle retry due to server slowdown
     async def query_quest(print_suffix=None):
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
@@ -113,6 +120,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
 
         return query_records
 
+    # Create multiple async tasks
     tasks = []
     total = len(modified_params_list)
     counter = 0
@@ -121,6 +129,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_param_
         tasks.append(asyncio.create_task(query_quest(print_suffix=f'({counter}/{total})')))
         await asyncio.sleep(1)
 
+    # Combine tasks results
     res = await asyncio.gather(*tasks)
     await client_session.close()
 
