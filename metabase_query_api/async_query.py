@@ -14,6 +14,16 @@ nest_asyncio.apply()  # To avoid asyncio error
 
 
 async def async_query(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None):
+    '''
+    This function return maximum 2000 rows data
+    :param client_session: asyncio client session
+    :param domain_url: https://your-domain.com
+    :param question_id: 123456
+    :param headers:
+    :param request_data: json.dumps({'parameters': modified_params})
+    :param print_suffix: String
+    :return: JSON data
+    '''
     print('Sending request', print_suffix)
 
     query_res = await client_session.post(url=f'{domain_url}/api/card/{question_id}/query', headers=headers, data=request_data, timeout=1800)
@@ -43,14 +53,17 @@ async def async_query(client_session: object, domain_url: str, question_id, head
 
 async def export_question_bulk_filter_values(url: str, session: str, bulk_field_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
     '''
+    This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
+
+    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values())
 
     :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
     :param session: Metabase Session
-    :param bulk_field_slug:
-    :param bulk_values_list:
+    :param bulk_field_slug: The field filter slug, get it in URL on browser
+    :param bulk_values_list: A list of values that you want to add to filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts when error by server slowing
-    :return:
+    :return: JSON data
     '''
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
