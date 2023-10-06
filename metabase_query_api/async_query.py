@@ -6,14 +6,14 @@ import nest_asyncio
 from tenacity import *
 
 if __name__ == '__main__':
-    from query_sync import metabase_card_info
+    from sync_query import parse_question
 else:
-    from .query_sync import metabase_card_info
+    from .sync_query import parse_question
 
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def metabase_query_async(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None):
+async def async_query(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None):
     print('Sending request', print_suffix)
 
     query_res = await client_session.post(url=f'{domain_url}/api/card/{question_id}/query', headers=headers, data=request_data, timeout=1800)
@@ -41,7 +41,7 @@ async def metabase_query_async(client_session: object, domain_url: str, question
     return query_records
 
 
-async def metabase_bulk_request(url: str, session: str, bulk_field_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
+async def export_question_bulk_filter_values(url: str, session: str, bulk_field_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10):
     '''
 
     :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
@@ -54,7 +54,7 @@ async def metabase_bulk_request(url: str, session: str, bulk_field_slug: str, bu
     '''
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
-    card_data = metabase_card_info(url=url, session=session, bulk_field_slug=bulk_field_slug)
+    card_data = parse_question(url=url, session=session, bulk_field_slug=bulk_field_slug)
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
@@ -81,7 +81,7 @@ async def metabase_bulk_request(url: str, session: str, bulk_field_slug: str, bu
     async def query_quest(print_suffix=None):
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
-            return await metabase_query_async(client_session=client_session,
+            return await async_query(client_session=client_session,
                                               domain_url=domain_url,
                                               question_id=question_id,
                                               headers=headers,
@@ -112,8 +112,8 @@ async def metabase_bulk_request(url: str, session: str, bulk_field_slug: str, bu
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain.com/question/83789-test-api?run=1'
-    bulk_field_slug = 'tracking_id'
+    url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+    bulk_field_slug = 'id'
     bulk_values_list = []
-    result = asyncio.run(metabase_bulk_request(url=url, session=session, bulk_field_slug=bulk_field_slug, bulk_values_list=bulk_values_list))
+    result = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_field_slug=bulk_field_slug, bulk_values_list=bulk_values_list))
     print(len(result))

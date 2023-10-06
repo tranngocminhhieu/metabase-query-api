@@ -1,2 +1,1 @@
-from .query_sync import metabase_query, metabase_query_request
-from .query_async import metabase_bulk_request
+from . import async_query, sync_query

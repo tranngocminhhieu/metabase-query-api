@@ -3,7 +3,7 @@ from urllib import parse
 import requests
 from tenacity import *
 
-def metabase_query(domain_url: str, question_id, session: str, params: dict, timeout=1800):
+def export_query(domain_url: str, question_id, session: str, params: dict, timeout=1800):
     '''
 
     :param domain_url: https://your-domain.com
@@ -35,9 +35,9 @@ def metabase_query(domain_url: str, question_id, session: str, params: dict, tim
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
-def metabase_card_info(url: str, session: str, bulk_field_slug: str = None):
+def parse_question(url: str, session: str, bulk_field_slug: str = None):
     '''
-    This function support for metabase_query_request and metabase_bulk_request
+    This function support for export_question and metabase_bulk_request
 
     :param url: 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
     :param session: Metabase Session
@@ -97,7 +97,7 @@ def metabase_card_info(url: str, session: str, bulk_field_slug: str = None):
     return card_data
 
 
-def metabase_query_request(url: str, session: str, retry_attempts=0):
+def export_question(url: str, session: str, retry_attempts=0):
     '''
 
     :param url: https://your-domain.com/question/123456-example?your_filter=SomeThing
@@ -105,7 +105,7 @@ def metabase_query_request(url: str, session: str, retry_attempts=0):
     :param retry_attempts: Number of retry attempts when error by server slowing
     :return: JSON data
     '''
-    card_data = metabase_card_info(url=url, session=session)
+    card_data = parse_question(url=url, session=session)
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
@@ -113,7 +113,7 @@ def metabase_query_request(url: str, session: str, retry_attempts=0):
 
     @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
     def get_query_data():
-        return metabase_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)})
+        return export_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)})
 
     query_data = get_query_data()
 
@@ -126,6 +126,6 @@ def metabase_query_request(url: str, session: str, retry_attempts=0):
 
 if __name__ == '__main__':
     session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain.com/question/83789-test-api?run=1'
-    query_data = metabase_query_request(url=url, session=session, retry_attempts=5)
+    url = 'https://your-domain.com/question/123456-example?your_filter=SomeThing'
+    query_data = export_question(url=url, session=session, retry_attempts=5)
     print(query_data)
