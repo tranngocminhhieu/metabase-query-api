@@ -1,3 +1,6 @@
+# 1.0.2
+Add `verbose` parameter to functions
+
 # 1.0.1
 Change function name from `export_question_bulk_filter_values` to `export_question_bulk_param_values`
 
