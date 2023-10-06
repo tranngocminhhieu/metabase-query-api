@@ -50,7 +50,7 @@ with open('CSV_file.csv', 'wb') as file:
 
 ```python
 bulk_param_slug = 'order_id'
-bulk_values_list = ['12345', '67890', '...', '98765']
+bulk_values_list = ['12345', '...', '98765']
 
 question_json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list))
 ```
