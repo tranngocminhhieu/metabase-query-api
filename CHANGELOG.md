@@ -1,5 +1,7 @@
 # 1.0.2
-Add `verbose` parameter to functions to enable/disable print.
+- Add `verbose` parameter to functions to enable/disable print.
+- Fix wrong parameter name in `parse_question` function (`bulk_param_slug`).
+- Add more comments and function descriptions.
 
 # 1.0.1
 Change function name from `export_question_bulk_filter_values` to `export_question_bulk_param_values`
