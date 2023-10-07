@@ -7,6 +7,9 @@ from tenacity import *
 
 def export_query(domain_url: str, question_id, session: str, params: dict, data_format='json', timeout=1800, verbose=True):
     '''
+    This is the main function to get data from Metabase.
+    To support for Retry in export_question function, it will raise for some connection error and server slowdown error.
+    Error by user will be return, for example user forget fill in a required parameter.
 
     :param domain_url: https://your-domain.com
     :param question_id: 123456
@@ -19,6 +22,7 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
     if verbose:
         print('Sending request')
 
+    # Get data from Metabase
     content_type_values = {
         'json': 'application/json',
         'csv': 'text/csv',
@@ -29,11 +33,14 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
 
     query_res = requests.post(url=f'{domain_url}/api/card/{question_id}/query/{data_format}', headers=headers, params=params, timeout=timeout)
 
+    # Only raise error: Connection, Timeout, Metabase server slowdown
+    # Error by user will be return as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
     retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m']
 
+    # JSON
     if data_format == 'json':
         query_data = query_res.json()
         if 'error' in query_data:
@@ -41,6 +48,8 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
                 raise Exception(query_data['error'])
             else:
                 return {'error': query_data['error']}
+
+    # XLSX, CSV: Sucesss -> content, error -> JSON
     else:
         query_data = query_res.content
         if b'"error":' in query_data:
@@ -54,13 +63,14 @@ def export_query(domain_url: str, question_id, session: str, params: dict, data_
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
-def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose = True):
+def parse_question(url: str, session: str, bulk_param_slug: str = None, verbose = True):
     '''
-    This function support for export_question and export_question_bulk_param_values
+    This function support for export_question and export_question_bulk_param_values.
+    It helps create a params JSON from URL, It also checks if Metabase session is valid.
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
-    :param bulk_field_slug: The query name in URL that you want to add and filter values run in bulk
+    :param bulk_param_slug: The query name in URL that you want to add and filter values run in bulk
     :param verbose: Print progress or not
     :return: A JSON data that support for export functions
     '''
@@ -94,12 +104,12 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose 
     # Build params
     available_params = card_data['parameters']
 
-    ## Add bulk_field_slug
-    if bulk_field_slug:
-        if bulk_field_slug not in [p['slug'] for p in available_params]:
-            raise ValueError('bulk_field_slug is not exist, check the filter slug in URL on browser')
-        if bulk_field_slug not in query_dict:
-            query_dict[bulk_field_slug] = []
+    ## Add bulk_param_slug
+    if bulk_param_slug:
+        if bulk_param_slug not in [p['slug'] for p in available_params]:
+            raise ValueError('bulk_param_slug is not exist, check the filter slug in URL on browser')
+        if bulk_param_slug not in query_dict:
+            query_dict[bulk_param_slug] = []
 
     ## Create params added by user
     params = []
@@ -117,7 +127,7 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose 
                 params.append(param)
                 break
 
-    ## Get column sort order
+    # Get column sort order
     result_metadata = card_data['result_metadata']
     column_sort_order = [col['display_name'] for col in result_metadata]
 
@@ -128,6 +138,8 @@ def parse_question(url: str, session: str, bulk_field_slug: str = None, verbose 
 
 def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True):
     '''
+    This function helps user get data from a question URL and a Metabase cookie.
+    It supports Retry, help user retry when a connection error or Metabase sever slowdown occurs.
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
@@ -148,7 +160,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     params = card_data['params']
     column_sort_order = card_data['column_sort_order']
 
-    # Handle retry due to server slowdown
+    # Handle retry due to Connection, Timeout, Metabase server slowdown
     @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
     def get_query_data():
         return export_query(domain_url=domain_url, question_id=question_id, session=session, params={'parameters': json.dumps(params)}, data_format=data_format, verbose=verbose)

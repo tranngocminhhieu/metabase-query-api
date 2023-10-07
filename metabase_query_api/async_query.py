@@ -13,13 +13,16 @@ else:
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def async_query(client_session: object, domain_url: str, question_id, headers: dict, request_data, print_suffix=None, verbose=True):
+async def async_query(client_session: object, domain_url: str, question_id, session: str, request_data, print_suffix=None, verbose=True):
     '''
-    This function return maximum 2000 rows data
+    This API will return maximum 2000 records, this is what you see when run a question on the browser.
+    But this API allow sending parameters in data payload, we can add maximum 2000 values in a parameter.
+    It only supports content type (data format) JSON.
+
     :param client_session: asyncio client session
     :param domain_url: https://your-domain.com
     :param question_id: 123456
-    :param headers:
+    :param session: Metabase session
     :param request_data: json.dumps({'parameters': modified_params})
     :param print_suffix: String
     :param verbose: Print progress or not
@@ -29,8 +32,13 @@ async def async_query(client_session: object, domain_url: str, question_id, head
     if verbose:
         print('Sending request', print_suffix)
 
+    # Get data
+    headers = {'Content-Type': 'application/json', 'X-Metabase-Session': session}
+
     query_res = await client_session.post(url=f'{domain_url}/api/card/{question_id}/query', headers=headers, data=request_data, timeout=1800)
 
+    # Only raise error: Connection, Timeout, Metabase server slowdown
+    # Error by user will be return as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
@@ -44,6 +52,7 @@ async def async_query(client_session: object, domain_url: str, question_id, head
         else:
             return {'error': query_data['error']}
 
+    # Convert data to records (JSON)
     query_data = query_data['data']
 
     columns = [col['name'] for col in query_data['cols']]
@@ -78,7 +87,6 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
 
     domain_url = card_data['domain_url']
     question_id = card_data['question_id']
-    headers = card_data['headers']
     params = card_data['params']
     column_sort_order = card_data['column_sort_order']
 
@@ -102,14 +110,14 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
     # Client session for requesting
     client_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=5))
 
-    # Handle retry due to server slowdown
+    # Handle retry due to Connection, Timeout, Metabase server slowdown
     async def query_quest(print_suffix=None, verbose=True):
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
             return await async_query(client_session=client_session,
                                      domain_url=domain_url,
                                      question_id=question_id,
-                                     headers=headers,
+                                     session=session,
                                      request_data=json.dumps({'parameters': modified_params}),
                                      print_suffix=print_suffix,
                                      verbose=verbose)
