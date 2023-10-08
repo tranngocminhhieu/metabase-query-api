@@ -1,11 +1,6 @@
-import asyncio
 import json
 
-import aiohttp
 import nest_asyncio
-from tenacity import *
-
-from .sync_card import parse_card_question
 
 nest_asyncio.apply()  # To avoid asyncio error
 

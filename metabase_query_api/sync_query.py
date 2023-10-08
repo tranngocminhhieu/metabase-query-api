@@ -2,12 +2,9 @@ from urllib import parse
 
 from tenacity import *
 
-if __name__ == '__main__':
-    from sync_card import export_card, parse_card_question
-    from sync_dataset import export_dataset, parse_dataset_question
-else:
-    from .sync_card import export_card, parse_card_question
-    from .sync_dataset import export_dataset, parse_dataset_question
+from .sync_card import export_card, parse_card_question
+from .sync_dataset import export_dataset, parse_dataset_question
+
 
 def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True, timeout=1800):
     '''
@@ -69,10 +66,3 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
         print('Received data')
 
     return query_data
-
-
-if __name__ == '__main__':
-    session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
-    url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
-    query_data = export_question(url=url, session=session, data_format='json', retry_attempts=5)
-    print(query_data[0])
