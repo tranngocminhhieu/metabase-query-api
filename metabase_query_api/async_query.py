@@ -83,7 +83,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
             modified_dataset_query_list.append(new_dataset_query)
 
     # Handle Retry due to Connection, Timeout, Metabase server slowdown
-    async def query_quest(print_suffix=None, verbose=True):
+    async def query_quest(payload, print_suffix=None, verbose=True):
         @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
         async def get_query_data():
             if api_endpoint == 'card':
@@ -91,14 +91,14 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
                                               domain_url=domain_url,
                                               question_id=question_id,
                                               session=session,
-                                              parameters=modified_parameters,
+                                              parameters=payload,
                                               print_suffix=print_suffix,
                                               verbose=verbose,
                                               timeout=timeout)
             elif api_endpoint == 'dataset':
                 return await async_dataset(client_session=client_session,
                                            domain_url=domain_url,
-                                           dataset_query=modified_dataset_query,
+                                           dataset_query=payload,
                                            session=session,
                                            print_suffix=print_suffix,
                                            verbose=verbose,
@@ -127,14 +127,14 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
         counter = 0
         for modified_parameters in modified_parameters_list:
             counter += 1
-            tasks.append(asyncio.create_task(query_quest(print_suffix=f'({counter}/{total})', verbose=verbose)))
+            tasks.append(asyncio.create_task(query_quest(payload=modified_parameters, print_suffix=f'({counter}/{total})', verbose=verbose)))
             await asyncio.sleep(1)
     elif api_endpoint == 'dataset':
         total = len(modified_dataset_query_list)
         counter = 0
         for modified_dataset_query in modified_dataset_query_list:
             counter += 1
-            tasks.append(asyncio.create_task(query_quest(print_suffix=f'({counter}/{total})', verbose=verbose)))
+            tasks.append(asyncio.create_task(query_quest(payload=modified_dataset_query, print_suffix=f'({counter}/{total})', verbose=verbose)))
             await asyncio.sleep(1)
 
     # Combine tasks results
