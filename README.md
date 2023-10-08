@@ -6,17 +6,14 @@
 
 This package will help Data workers get data from [Metabase](https://www.metabase.com/) questions more easily and effectively. It only focuses on the [Card Query API](https://www.metabase.com/docs/latest/api/card#post-apicardcard-idqueryexport-format) and does not include other Metabase APIs.
 
-## Features (pros)
+## Features
 1. Get question data in any data format provided by Metabase (JSON, CSV, XLSX).
 2. Input question URL and Metabase Session, no need to provide parameters payload.
 3. JSON results have the same column sort order as the browser.
 4. Automatically check if Metabase session is available.
 5. Allow retry if an error occurs due to server slowdown.
 6. Allows entering multiple param values in bulk, suitable for retrieving data for a large number of ids, using `asyncio` technique.
-
-## Cons
-1. Unsaved question URLs are not supported yet.
-2. Bulk param values with `asyncio` only support SQL query questions.
+7. Support both saved questions (card) and unsaved question (dataset).
 
 ## Installation
 ```commandline

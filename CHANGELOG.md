@@ -1,3 +1,6 @@
+# 1.0.3
+Support both saved questions (card) and unsaved question (dataset).
+
 # 1.0.2
 - Add `verbose` parameter to functions to enable/disable print.
 - Fix wrong parameter name in `parse_question` function (`bulk_param_slug`).
