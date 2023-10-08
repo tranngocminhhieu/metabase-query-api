@@ -2,8 +2,8 @@ import json
 
 async def async_dataset(client_session: object, domain_url: str, dataset_query: dict, session: str, print_suffix=None, verbose=True, timeout=1800):
     '''
-    This API will return maximum 2000 records, this is what you see when run a question on the browser.
-    But this API allow sending parameters in data payload, we can add maximum 2000 values in a parameter.
+    This API will return a maximum of 2000 records, and this is what you see when you run a question on the browser.
+    But this API allows sending parameters in data payload, and we can add a maximum of 2000 values in a parameter.
     It only supports content type (data format) JSON.
 
     :param client_session: aiohttp.ClientSession
@@ -25,7 +25,7 @@ async def async_dataset(client_session: object, domain_url: str, dataset_query: 
     query_res = await client_session.post(url=f'{domain_url}/api/dataset', headers=headers, data=data, timeout=timeout)
 
     # Only raise error: Connection, Timeout, Metabase server slowdown
-    # Error by user will be return as a JSON
+    # Error by the user will be returned as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
