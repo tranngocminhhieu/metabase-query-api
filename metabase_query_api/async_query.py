@@ -27,6 +27,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :param verbose: Print the progress
+    :param timeout: Timeout for each request
     :return: JSON data
     '''
 
