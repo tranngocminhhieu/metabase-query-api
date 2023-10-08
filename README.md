@@ -52,14 +52,14 @@ question_json_data = export_question(url=url, session=session, retry_attempts=5)
 #### Export question data to an Excel file
 ```python
 question_xlsx_data = export_question(url=url, session=session, data_format='xlsx', retry_attempts=5)
-with open('Excel_file.xlsx', 'wb') as file:
+with open('file.xlsx', 'wb') as file:
     file.write(question_xlsx_data)
 ```
 
 #### Export question data to a CSV file
 ```python
 question_csv_data = export_question(url=url, session=session, data_format='csv', retry_attempts=5)
-with open('CSV_file.csv', 'wb') as file:
+with open('file.csv', 'wb') as file:
     file.write(question_csv_data)
 ```
 
