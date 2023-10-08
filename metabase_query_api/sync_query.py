@@ -11,8 +11,8 @@ else:
 
 def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True, timeout=1800):
     '''
-    This function helps user get data from a question URL and a Metabase cookie.
-    It supports Retry, help user retry when a connection error or Metabase sever slowdown occurs.
+    This function helps users get data from a question URL and a Metabase cookie.
+    It supports Retry to help the user retry when a connection error or Metabase sever slowdown occurs.
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing or https://your-domain.com/question#eW91cl9xdWVyeQ==
     :param session: Metabase Session
@@ -23,7 +23,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     :return: JSON data or Bytes data
     '''
 
-    # Check if data format is right
+    # Check if the data format is right
     if data_format not in ['json', 'xlsx', 'csv']:
         raise ValueError('Accepted values for data_format are json, xlsx, csv')
 
@@ -57,7 +57,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     # Get data
     query_data = get_query_data()
 
-    # Check error by user
+    # Check error by the user
     if type(query_data) == dict and 'error' in query_data:
         raise Exception(query_data['error'])
 
