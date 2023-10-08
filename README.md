@@ -89,4 +89,12 @@ bulk_param_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
 question_json_data = asyncio.run(export_question_bulk_param_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
+
+# Save to CSV/Excel file
+import pandas as pd
+
+df = pd.DataFrame(question_json_data)
+
+df.to_csv('file.csv', index=False)
+df.to_excel('file.xlsx', index=False)
 ```
