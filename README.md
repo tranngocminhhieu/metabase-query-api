@@ -73,7 +73,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 **⚠️ Note:** Using this function may slow down your Metabase server.
 
 **Special parameters:**
-- `bulk_param_slug` is the parameters slug in URL.
+- `bulk_param_slug`: Saved question -> parameter slug in URL, unsaved question -> Field Name as field_name.
 - `bulk_values_list` is a list of values.
 - `chunk_size` default and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
