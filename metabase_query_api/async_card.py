@@ -12,11 +12,11 @@ nest_asyncio.apply()  # To avoid asyncio error
 
 async def async_card_query(client_session: object, domain_url: str, question_id, session: str, parameters: list, print_suffix=None, verbose=True, timeout=1800):
     '''
-    This API will return maximum 2000 records, this is what you see when run a question on the browser.
-    But this API allow sending parameters in data payload, we can add maximum 2000 values in a parameter.
+    This API will return a maximum of 2000 records, this is what you see when running a question on the browser.
+    But this API allows sending parameters in data payload, we can add a maximum of 2000 values in a parameter.
     It only supports content type (data format) JSON.
 
-    :param client_session: asyncio client session
+    :param client_session: aiohttp client session
     :param domain_url: https://your-domain.com
     :param question_id: 123456
     :param session: Metabase session
@@ -36,7 +36,7 @@ async def async_card_query(client_session: object, domain_url: str, question_id,
     query_res = await client_session.post(url=f'{domain_url}/api/card/{question_id}/query', headers=headers, data=data, timeout=timeout)
 
     # Only raise error: Connection, Timeout, Metabase server slowdown
-    # Error by user will be return as a JSON
+    # Error by the user will be returned as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
