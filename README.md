@@ -8,12 +8,12 @@ This package will help Data workers get data from [Metabase](https://www.metabas
 
 ## Features
 1. Get question data in any data format provided by Metabase (JSON, CSV, XLSX).
-2. Input question URL and Metabase Session, no need to provide parameters payload.
+2. Input question URL and Metabase Session. No need to provide parameters payload.
 3. JSON results have the same column sort order as the browser.
 4. Automatically check if Metabase session is available.
 5. Allow retry if an error occurs due to server slowdown.
 6. Allows entering multiple param values in bulk, suitable for retrieving data for a large number of ids, using `asyncio` technique.
-7. Support both saved questions (card) and unsaved question (dataset).
+7. Support both saved questions (card) and unsaved questions (dataset).
 
 ## Installation
 ```commandline
@@ -30,7 +30,7 @@ import asyncio
 ```
 
 ### Get question data
-- Copy the question URL in the browser, note that you must fill in the necessary params before copying.
+- Copy the question URL in the browser. Note that you must fill in the necessary parameters before copying.
 - Use a different API to get the [Metabase Session](https://www.metabase.com/docs/latest/api/session#post-apisession). Or you can use this [Chrome extension](https://chrome.google.com/webstore/detail/cookie-tab-viewer/fdlghnedhhdgjjfgdpgpaaiddipafhgk) to get it.
 
 **Special parameters:**
@@ -75,7 +75,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 **Special parameters:**
 - `bulk_filter_slug`: Saved question -> parameter slug in URL, unsaved question -> Field Name as field_name.
 - `bulk_values_list` is a list of values.
-- `chunk_size` default and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
+- `chunk_size` default, and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
