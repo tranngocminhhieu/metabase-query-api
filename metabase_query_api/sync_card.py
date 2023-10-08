@@ -65,13 +65,13 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
-def parse_card_question(url: str, session: str, bulk_param_slug: str = None, verbose=True):
+def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, verbose=True):
     '''
     This function parses the URL to necessary information, that will be used to input for export functions.
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing
     :param session: Metabase Session
-    :param bulk_param_slug: For example order_id
+    :param bulk_filter_slug: For example order_id
     :param verbose: Print the progress
     :return: question information as JSON
     '''
@@ -109,12 +109,12 @@ def parse_card_question(url: str, session: str, bulk_param_slug: str = None, ver
     # Build parameters
     available_parameters = card_data['parameters']
 
-    ## Add bulk_param_slug
-    if bulk_param_slug:
-        if bulk_param_slug not in [p['slug'] for p in available_parameters]:
-            raise ValueError('bulk_param_slug is not exist, check the filter slug in URL on browser')
-        if bulk_param_slug not in query_dict:
-            query_dict[bulk_param_slug] = []
+    ## Add bulk_filter_slug
+    if bulk_filter_slug:
+        if bulk_filter_slug not in [p['slug'] for p in available_parameters]:
+            raise ValueError('bulk_filter_slug is not exist, check the filter slug in URL on browser')
+        if bulk_filter_slug not in query_dict:
+            query_dict[bulk_filter_slug] = []
 
     ## Create parameters added by user
     parameters = []

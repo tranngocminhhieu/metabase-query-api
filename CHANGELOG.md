@@ -1,3 +1,6 @@
+# 1.0.4
+Change function and parameter name, from `...bulk_param...` to `...bulk_filter...` because the package now support unsaved question URL and users know filter more than param.
+
 # 1.0.3
 Support both saved questions (card) and unsaved question (dataset).
 

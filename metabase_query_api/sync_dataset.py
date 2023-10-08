@@ -69,13 +69,13 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5), reraise=True)
-def parse_dataset_question(url: str, session: str, bulk_param_slug: str = None, verbose=True):
+def parse_dataset_question(url: str, session: str, bulk_filter_slug: str = None, verbose=True):
     '''
     This function parses the URL to necessary information, that will be used to input for export functions.
 
     :param url: https://your-domain.com/question#eW91cl9xdWVyeQ==
     :param session: Metabase session
-    :param bulk_param_slug: For example order_id
+    :param bulk_filter_slug: For example order_id
     :param verbose: Print the progress
     :return: question information as JSON
     '''
@@ -111,31 +111,31 @@ def parse_dataset_question(url: str, session: str, bulk_param_slug: str = None, 
     fields = query_metadata['fields']
     column_sort_order = [col['display_name'] for col in fields]
 
-    # Rebuild dataset_query if bulk_param_slug
-    if bulk_param_slug:
-        ## Find the bulk_param_id and create bulk_param_setting
-        bulk_param_id = [f['id'] for f in fields if f['name'] == bulk_param_slug]
-        if not bulk_param_id:
-            raise ValueError('bulk_param_slug is not exist in fields')
+    # Rebuild dataset_query if bulk_filter_slug
+    if bulk_filter_slug:
+        ## Find the bulk_filter_id and create bulk_filter_setting
+        bulk_filter_id = [f['id'] for f in fields if f['name'] == bulk_filter_slug]
+        if not bulk_filter_id:
+            raise ValueError('bulk_filter_slug is not exist in fields')
         else:
-            bulk_param_id = bulk_param_id[0]
-        bulk_param_setting = ['=', ['field', bulk_param_id, None]]
+            bulk_filter_id = bulk_filter_id[0]
+        bulk_filter_setting = ['=', ['field', bulk_filter_id, None]]
 
-        ## Make sure the query has filter and not include the filter of bulk_param_id
-        ## We will add bulk_param_setting with values in a async export function
+        ## Make sure the query has filter and not include the filter of bulk_filter_id
+        ## We will add bulk_filter_setting with values in a async export function
         if 'filter' not in dataset_query['query']:
             dataset_query['query']['filter'] = ['and']
         else:
-            dataset_query['query']['filter'] = ['and'] + [f for f in dataset_query['query']['filter'][1:] if f[1][1] != bulk_param_id]
+            dataset_query['query']['filter'] = ['and'] + [f for f in dataset_query['query']['filter'][1:] if f[1][1] != bulk_filter_id]
     else:
-        bulk_param_id = None
-        bulk_param_setting = None
+        bulk_filter_id = None
+        bulk_filter_setting = None
 
     table_data = {'domain_url': domain_url,
                   'dataset_query': dataset_query,
                   'source_table': source_table,
                   'column_sort_order': column_sort_order,
-                  'bulk_param_id': bulk_param_id,
-                  'bulk_param_setting': bulk_param_setting}
+                  'bulk_filter_id': bulk_filter_id,
+                  'bulk_filter_setting': bulk_filter_setting}
 
     return table_data

@@ -25,7 +25,7 @@ pip install metabase-query-api
 ### Import package
 ```python
 from metabase_query_api.sync_query import export_question
-from metabase_query_api.async_query import export_question_bulk_param_values
+from metabase_query_api.async_query import export_question_bulk_filter_values
 import asyncio
 ```
 
@@ -73,7 +73,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 **⚠️ Note:** Using this function may slow down your Metabase server.
 
 **Special parameters:**
-- `bulk_param_slug`: Saved question -> parameter slug in URL, unsaved question -> Field Name as field_name.
+- `bulk_filter_slug`: Saved question -> parameter slug in URL, unsaved question -> Field Name as field_name.
 - `bulk_values_list` is a list of values.
 - `chunk_size` default and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
@@ -85,10 +85,10 @@ url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing
 # Unsaved question URL
 url = 'https://your-domain.com/question#eW91cl9xdWVyeQ=='
 
-bulk_param_slug = 'order_id'
+bulk_filter_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
-json_data = asyncio.run(export_question_bulk_param_values(url=url, session=session, bulk_param_slug=bulk_param_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
+json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_filter_slug=bulk_filter_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
 
 # Save to CSV/Excel file
 import pandas as pd

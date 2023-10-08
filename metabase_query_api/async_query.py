@@ -14,15 +14,15 @@ from .sync_dataset import parse_dataset_question
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def export_question_bulk_param_values(url: str, session: str, bulk_param_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True, timeout=1800):
+async def export_question_bulk_filter_values(url: str, session: str, bulk_filter_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True, timeout=1800):
     '''
     This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
 
-    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_param_values()).
+    To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values()).
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing or https://your-domain.com/question#eW91cl9xdWVyeQ==
     :param session: Metabase Session
-    :param bulk_param_slug: If URL is a saved question then get it in URL elif input the Field Name as field_name
+    :param bulk_filter_slug: If URL is a saved question then get it in URL elif input the Field Name as field_name
     :param bulk_values_list: A list of values that you want to add to filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
@@ -47,7 +47,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
 
     # Parse question to get necessary variables and payload
     if api_endpoint == 'card':
-        card_data = parse_card_question(url=url, session=session, bulk_param_slug=bulk_param_slug, verbose=verbose)
+        card_data = parse_card_question(url=url, session=session, bulk_filter_slug=bulk_filter_slug, verbose=verbose)
         domain_url = card_data['domain_url']
         question_id = card_data['question_id']
         parameters = card_data['parameters']
@@ -58,7 +58,7 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
         for bulk_values in bulk_values_lists:
             modified_parameters = []
             for param in parameters:
-                if param['target'][-1][-1] == bulk_param_slug:
+                if param['target'][-1][-1] == bulk_filter_slug:
                     modified_parameters.append({
                         'type': param['type'],
                         'value': bulk_values,
@@ -69,17 +69,17 @@ async def export_question_bulk_param_values(url: str, session: str, bulk_param_s
             modified_parameters_list.append(modified_parameters)
 
     elif api_endpoint == 'dataset':
-        table_data = parse_dataset_question(url=url, session=session, bulk_param_slug=bulk_param_slug, verbose=verbose)
+        table_data = parse_dataset_question(url=url, session=session, bulk_filter_slug=bulk_filter_slug, verbose=verbose)
         domain_url = table_data['domain_url']
         dataset_query = table_data['dataset_query']
         column_sort_order = table_data['column_sort_order']
-        bulk_param_setting = table_data['bulk_param_setting']
+        bulk_filter_setting = table_data['bulk_filter_setting']
 
         # Create a list of modified_dataset_query
         modified_dataset_query_list = []
         for bulk_values in bulk_values_lists:
             new_dataset_query = copy.deepcopy(dataset_query)
-            new_dataset_query['query']['filter'] += [bulk_param_setting + bulk_values]
+            new_dataset_query['query']['filter'] += [bulk_filter_setting + bulk_values]
             modified_dataset_query_list.append(new_dataset_query)
 
     # Handle Retry due to Connection, Timeout, Metabase server slowdown
