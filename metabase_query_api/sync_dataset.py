@@ -9,8 +9,8 @@ from tenacity import *
 def export_dataset(domain_url: str, dataset_query: dict, session: str, data_format='json', verbose=True, timeout=1800):
     '''
     This function helps get data from an unsaved question.
-    To support for Retry feature, it will raise for some connection error and server slowdown error.
-    Error by user will be return, for example user forget fill in a required parameter.
+    To support the Retry feature, it will raise some connection errors and server slowdown errors.
+    An error by the user will be returned. For example, the user forgets to fill in a required parameter.
 
     :param domain_url: https://your-domain.com
     :param dataset_query: JSON query
@@ -40,7 +40,7 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
                               timeout=timeout)
 
     # Only raise error: Connection, Timeout, Metabase server slowdown
-    # Error by user will be return as a JSON
+    # Error by the user will be returned as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
@@ -55,7 +55,7 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
             else:
                 return {'error': query_data['error']}
 
-    # XLSX, CSV: Sucesss -> content, error -> JSON
+    # XLSX, CSV: Success -> content, error -> JSON
     else:
         query_data = query_res.content
         if b'"error":' in query_data:
@@ -83,7 +83,7 @@ def parse_dataset_question(url: str, session: str, bulk_filter_slug: str = None,
     if verbose:
         print('Parsing URL and verifying Metabase Session')
 
-    # Parse URL to get variables. Also check if session is available.
+    # Parse URL to get variables. Also, check if the session is available.
     headers = {'Content-Type': 'application/json', 'X-Metabase-Session': session}
     parsed_url = parse.urlparse(url=url)
     domain_url = f'{parsed_url.scheme}://{parsed_url.netloc}'  # > export functions
@@ -96,7 +96,7 @@ def parse_dataset_question(url: str, session: str, bulk_filter_slug: str = None,
     ## Raise error
     card_error_dict = {
         401: 'Session is not valid',
-        404: 'Table is not exist or you dont have permission',
+        404: 'Table does not exist or you do not have permission',
     }
 
     if not table_res.ok:
@@ -121,8 +121,8 @@ def parse_dataset_question(url: str, session: str, bulk_filter_slug: str = None,
             bulk_filter_id = bulk_filter_id[0]
         bulk_filter_setting = ['=', ['field', bulk_filter_id, None]]
 
-        ## Make sure the query has filter and not include the filter of bulk_filter_id
-        ## We will add bulk_filter_setting with values in a async export function
+        ## Make sure the query has a filter and does not include the filter of bulk_filter_id
+        ## We will add bulk_filter_setting with values in an async export function
         if 'filter' not in dataset_query['query']:
             dataset_query['query']['filter'] = ['and']
         else:
