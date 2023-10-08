@@ -40,7 +40,11 @@ import asyncio
 
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
+
+# Saved question URL
 url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
+# Unsaved question URL
+url = 'https://your-domain.com/question#eW91cl9xdWVyeQ=='
 
 question_json_data = export_question(url=url, session=session, retry_attempts=5)
 ```
@@ -75,7 +79,12 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
+
+# Saved question URL
 url = 'https://your-domain.com/question/123456-example?your_param_slug=SomeThing'
+# Unsaved question URL
+url = 'https://your-domain.com/question#eW91cl9xdWVyeQ=='
+
 bulk_param_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
