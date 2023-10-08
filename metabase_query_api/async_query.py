@@ -16,14 +16,14 @@ nest_asyncio.apply()  # To avoid asyncio error
 
 async def export_question_bulk_filter_values(url: str, session: str, bulk_filter_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True, timeout=1800):
     '''
-    This function will split bulk_values_list to multiple small values list, and then send multiple request to get data, limit 5 connector per host.
+    This function will split bulk_values_list into multiple small values lists, and then send multiple requests to get data, limiting 5 connectors per host.
 
     To call this function, you need to import asyncio, and then call it by syntax: asyncio.run(export_question_bulk_filter_values()).
 
     :param url: https://your-domain.com/question/123456-example?your_param_slug=SomeThing or https://your-domain.com/question#eW91cl9xdWVyeQ==
     :param session: Metabase Session
-    :param bulk_filter_slug: If URL is a saved question then get it in URL elif input the Field Name as field_name
-    :param bulk_values_list: A list of values that you want to add to filter
+    :param bulk_filter_slug: If URL is a saved question, then get it in URL elif input the Field Name as field_name
+    :param bulk_values_list: A list of values that you want to add to the filter
     :param chunk_size: Maximum is 2000
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :param verbose: Print the progress
