@@ -8,8 +8,8 @@ from tenacity import *
 def export_card(domain_url: str, question_id, session: str, parameters, data_format='json', timeout=1800, verbose=True):
     '''
     This function helps get data from a saved question
-    To support for Retry feature, it will raise for some connection error and server slowdown error.
-    Error by user will be return, for example user forget fill in a required parameter.
+    To support the Retry feature, it will raise some connection errors and server slowdown errors.
+    An error by the user will be returned. For example, the user forgets to fill in a required parameter.
 
     :param domain_url: https://your-domain.com
     :param question_id: 123456
@@ -36,7 +36,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
     query_res = requests.post(url=f'{domain_url}/api/card/{question_id}/query/{data_format}', headers=headers, params=params, timeout=timeout)
 
     # Only raise error: Connection, Timeout, Metabase server slowdown
-    # Error by user will be return as a JSON
+    # Error by the user will be returned as a JSON
     if not query_res.ok:
         query_res.raise_for_status()
 
@@ -51,7 +51,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
             else:
                 return {'error': query_data['error']}
 
-    # XLSX, CSV: Sucesss -> content, error -> JSON
+    # XLSX, CSV: Success -> content, error -> JSON
     else:
         query_data = query_res.content
         if b'"error":' in query_data:
@@ -79,7 +79,7 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
     if verbose:
         print('Parsing URL and verifying Metabase Session')
 
-    # Parse URL to get variables. Also check if session is available.
+    # Parse URL to get variables. Also, check if the session is valid.
     headers = {'Content-Type': 'application/json', 'X-Metabase-Session': session}
     parsed_url = parse.urlparse(url=url)
     domain_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
@@ -91,7 +91,7 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
     ## Raise error
     card_error_dict = {
         401: 'Session is not valid',
-        404: 'Question is not exist or you dont have permission',
+        404: 'Question is not exist, or you do not have permission',
     }
 
     if not card_res.ok:
