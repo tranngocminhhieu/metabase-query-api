@@ -88,7 +88,7 @@ url = 'https://your-domain.com/question#eW91cl9xdWVyeQ=='
 bulk_filter_slug = 'order_id'
 bulk_values_list = ['12345', '...', '98765']
 
-json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_filter_slug=bulk_filter_slug, bulk_values_list=bulk_values_list, chunk_size=2000))
+json_data = asyncio.run(export_question_bulk_filter_values(url=url, session=session, bulk_filter_slug=bulk_filter_slug, bulk_values_list=bulk_values_list, chunk_size=2000, retry_attempts=10))
 
 # Save to CSV/Excel file
 import pandas as pd
