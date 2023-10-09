@@ -59,7 +59,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
         raise Exception(query_data['error'])
 
     # Order columns for JSON data
-    if data_format == 'json':
+    if data_format == 'json' and column_sort_order:
         query_data = [{col: item[col] for col in column_sort_order if col in item} for item in query_data]
 
     if verbose:

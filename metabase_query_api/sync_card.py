@@ -38,7 +38,10 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
     # Only raise error: Connection, Timeout, Metabase server slowdown
     # Error by the user will be returned as a JSON
     if not query_res.ok:
-        query_res.raise_for_status()
+        if query_res.status_code == 414:
+            return {'error': 'URI too long. Please do not add values to the filter in bulk. If you need such a filter then use the export_question_bulk_filter_values function.'}
+        else:
+            query_res.raise_for_status()
 
     retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m']
 
@@ -104,7 +107,11 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
 
     ## Get column sort order
     result_metadata = card_data['result_metadata']
-    column_sort_order = [col['display_name'] for col in result_metadata]
+    if result_metadata:
+        column_sort_order = [col['display_name'] for col in result_metadata]
+    else:
+        print('This query cannot reorder columns for JSON data')
+        column_sort_order = None
 
     # Build parameters
     available_parameters = card_data['parameters']

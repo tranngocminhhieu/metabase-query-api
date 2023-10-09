@@ -113,7 +113,8 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
             raise Exception(query_records['error'])
 
         # Sort columns
-        query_records = [{col: item[col] for col in column_sort_order if col in item} for item in query_records]
+        if column_sort_order:
+            query_records = [{col: item[col] for col in column_sort_order if col in item} for item in query_records]
 
         if verbose:
             print('Received data', print_suffix)
