@@ -39,7 +39,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
     # Error by the user will be returned as a JSON
     if not query_res.ok:
         if query_res.status_code == 414:
-            return {'error': 'URI too long. Please do not add values to the filter in bulk. If you need such a filter then use the export_question_bulk_filter_values function.'}
+            return {'error': 'URI is too long. Please do not add values to the filter in bulk. If you need such a filter, then use the export_question_bulk_filter_values function.'}
         else:
             query_res.raise_for_status()
 
