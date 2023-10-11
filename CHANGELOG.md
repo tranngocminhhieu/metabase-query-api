@@ -1,3 +1,6 @@
+# 1.0.7
+Fix error: `Invalid values provided for operator: :string/=` when input only 1 value in param.
+
 # 1.0.6
 - Avoid error for some queries that do not have `column_sort_order` ([Issue #3](https://github.com/tranngocminhhieu/metabase-query-api/issues/3)).
 - 414 error should be returned instead of retry ([Issue #1](https://github.com/tranngocminhhieu/metabase-query-api/issues/1)).

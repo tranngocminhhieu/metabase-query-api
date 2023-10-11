@@ -133,7 +133,7 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
                 param_value = query_dict[k]
                 if 'number' in param_type:
                     param_value = [float(i) for i in param_value]
-                if len(param_value) == 1:
+                if 'date' in param_type:
                     param_value = param_value[0]
                 param = {'type': param_type, 'value': param_value, 'target': param_target}
                 parameters.append(param)
