@@ -106,7 +106,7 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
     card_data = card_res.json()
 
     ## Get column sort order
-    result_metadata = card_data['result_metadata']
+    result_metadata = card_data.get('result_metadata')
     if result_metadata:
         column_sort_order = [col['display_name'] for col in result_metadata]
     else:
@@ -114,7 +114,7 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
         column_sort_order = None
 
     # For building parameters
-    available_parameters = card_data['parameters']
+    available_parameters = card_data.get('parameters')
     template_tags = card_data.get('dataset_query').get('native').get('template-tags')
 
     ## Add bulk_filter_slug
