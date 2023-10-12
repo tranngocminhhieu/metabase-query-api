@@ -113,8 +113,9 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
         print('This query cannot reorder columns for JSON data')
         column_sort_order = None
 
-    # Build parameters
+    # For building parameters
     available_parameters = card_data['parameters']
+    template_tags = card_data.get('dataset_query').get('native').get('template-tags')
 
     ## Add bulk_filter_slug
     if bulk_filter_slug:
@@ -125,19 +126,49 @@ def parse_card_question(url: str, session: str, bulk_filter_slug: str = None, ve
 
     ## Create parameters added by user
     parameters = []
-    for k in query_dict:
-        for p in available_parameters:
-            if p['slug'] == k:
-                param_type = p['type']
-                param_target = p['target']
-                param_value = query_dict[k]
-                if 'number' in param_type:
-                    param_value = [float(i) for i in param_value]
-                if 'date' in param_type:
-                    param_value = param_value[0]
-                param = {'type': param_type, 'value': param_value, 'target': param_target}
-                parameters.append(param)
-                break
+
+    if available_parameters:
+        for k in query_dict:
+            for p in available_parameters:
+                if p['slug'] == k:
+                    param_type = p['type']
+                    param_target = p['target']
+                    param_value = query_dict[k]
+                    if 'number' in param_type:
+                        param_value = [float(i) for i in param_value]
+                    if 'date' in param_type:
+                        param_value = param_value[0]
+                    param = {'type': param_type, 'value': param_value, 'target': param_target}
+                    parameters.append(param)
+                    break
+    elif template_tags:
+        non_dimension_tag_type_to_param_type = {
+            'date': 'date/single',
+            'number': 'number/=',
+            'text': 'category'
+        }
+        for k in query_dict:
+            tag = template_tags[k]
+            tag_type = tag['type']
+
+            if tag_type == 'dimension':
+                param_type = tag['widget-type']
+            else:
+                param_type = non_dimension_tag_type_to_param_type[tag_type]
+
+            param_target = [tag_type if tag_type == 'dimension' else 'variable', ['template-tag', k]]
+
+            param_value = query_dict[k]
+            if 'number' in param_type:
+                param_value = [float(i) for i in param_value]
+            if 'date' in param_type:
+                param_value = param_value[0]
+            param = {'type': param_type, 'value': param_value, 'target': param_target}
+
+            parameters.append(param)
+
+    elif not available_parameters and not template_tags and query_dict:
+        raise Exception('Can not build parameters payload for this question, please re-save your question and try again.')
 
     card_data = {'domain_url': domain_url,
                  'question_id': question_id,
