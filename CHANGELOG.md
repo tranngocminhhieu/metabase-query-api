@@ -1,3 +1,6 @@
+# 1.0.9
+Add check_retry_errors function for checking static errors and dynamic errors.
+
 # 1.0.8
 Can not build parameters payload for old queries due to Card API don't give parameters values. Use template-tags as an alternative method to build parameters payload, also raise an error if both parameters and template-tags is None in Card API data, It is simply fix by re-save the question. ([Issue #5](https://github.com/tranngocminhhieu/metabase-query-api/issues/5)) 
 
