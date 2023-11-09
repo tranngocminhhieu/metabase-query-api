@@ -7,7 +7,7 @@ from tenacity import *
 from .retry_errors import check_retry_errors
 
 
-def export_card(domain_url: str, question_id, session: str, parameters, data_format='json', timeout=1800, verbose=True):
+def export_card(domain_url: str, question_id, session: str, parameters, data_format='json', timeout=1800, verbose=True, custom_retry_errors=[]):
     '''
     This function helps get data from a saved question
     To support the Retry feature, it will raise some connection errors and server slowdown errors.
@@ -18,6 +18,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
     :param session: Metabase Session
     :param parameters: []
     :param verbose: Print the progress
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON or Bytes data
     '''
 
@@ -55,7 +56,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
             #     raise Exception(query_data['error'])
             # else:
             #     return {'error': query_data['error']}
-            return check_retry_errors(query_data['error'])
+            return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     # XLSX, CSV: Success -> content, error -> JSON
     else:
@@ -66,7 +67,7 @@ def export_card(domain_url: str, question_id, session: str, parameters, data_for
             #     raise Exception(query_data['error'])
             # else:
             #     return {'error': query_data['error']}
-            return check_retry_errors(query_data['error'])
+            return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     return query_data
 

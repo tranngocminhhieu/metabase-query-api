@@ -14,7 +14,7 @@ from .sync_dataset import parse_dataset_question
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def export_question_bulk_filter_values(url: str, session: str, bulk_filter_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True, timeout=1800):
+async def export_question_bulk_filter_values(url: str, session: str, bulk_filter_slug: str, bulk_values_list: list, chunk_size=2000, retry_attempts=10, verbose=True, timeout=1800, custom_retry_errors=[]):
     '''
     This function will split bulk_values_list into multiple small values lists, and then send multiple requests to get data, limiting 5 connectors per host.
 
@@ -28,6 +28,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
     :param retry_attempts: Number of retry attempts if an error occurs due to server slowdown
     :param verbose: Print the progress
     :param timeout: Timeout for each request
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON data
     '''
 

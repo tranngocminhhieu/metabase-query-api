@@ -6,7 +6,7 @@ import nest_asyncio
 nest_asyncio.apply()  # To avoid asyncio error
 
 
-async def async_card_query(client_session: object, domain_url: str, question_id, session: str, parameters: list, print_suffix=None, verbose=True, timeout=1800):
+async def async_card_query(client_session: object, domain_url: str, question_id, session: str, parameters: list, print_suffix=None, verbose=True, timeout=1800, custom_retry_errors=[]):
     '''
     This API will return a maximum of 2000 records, this is what you see when running a question on the browser.
     But this API allows sending parameters in data payload, we can add a maximum of 2000 values in a parameter.
@@ -20,6 +20,7 @@ async def async_card_query(client_session: object, domain_url: str, question_id,
     :param print_suffix: String
     :param verbose: Print progress or not
     :param timeout: Timeout for each request
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON data
     '''
 
@@ -45,7 +46,7 @@ async def async_card_query(client_session: object, domain_url: str, question_id,
         #     raise Exception(query_data['error'])
         # else:
         #     return {'error': query_data['error']}
-        return check_retry_errors(query_data['error'])
+        return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     # Convert data to records (JSON)
     query_data = query_data['data']

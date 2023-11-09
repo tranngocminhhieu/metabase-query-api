@@ -6,7 +6,7 @@ from .sync_card import export_card, parse_card_question
 from .sync_dataset import export_dataset, parse_dataset_question
 
 
-def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True, timeout=1800):
+def export_question(url: str, session: str, data_format='json', retry_attempts=0, verbose=True, timeout=1800, custom_retry_errors=[]):
     '''
     This function helps users get data from a question URL and a Metabase cookie.
     It supports Retry to help the user retry when a connection error or Metabase sever slowdown occurs.
@@ -17,6 +17,7 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     :param data_format: json, csv, xlsx
     :param verbose: Print the progress
     :param timeout: Timeout for each request
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON data or Bytes data
     '''
 
@@ -47,9 +48,9 @@ def export_question(url: str, session: str, data_format='json', retry_attempts=0
     @retry(stop=stop_after_attempt(retry_attempts), wait=wait_fixed(5), reraise=True)
     def get_query_data():
         if api_endpoint == 'dataset':
-            return export_dataset(domain_url=domain_url, dataset_query=dataset_query, session=session, data_format=data_format, verbose=verbose, timeout=timeout)
+            return export_dataset(domain_url=domain_url, dataset_query=dataset_query, session=session, data_format=data_format, verbose=verbose, timeout=timeout, custom_retry_errors=custom_retry_errors)
         elif api_endpoint == 'card':
-            return export_card(domain_url=domain_url, question_id=question_id, parameters=parameters, session=session, data_format=data_format, verbose=verbose, timeout=timeout)
+            return export_card(domain_url=domain_url, question_id=question_id, parameters=parameters, session=session, data_format=data_format, verbose=verbose, timeout=timeout, custom_retry_errors=custom_retry_errors)
 
     # Get data
     query_data = get_query_data()

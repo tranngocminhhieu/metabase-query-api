@@ -2,7 +2,7 @@ import json
 
 from .retry_errors import check_retry_errors
 
-async def async_dataset(client_session: object, domain_url: str, dataset_query: dict, session: str, print_suffix=None, verbose=True, timeout=1800):
+async def async_dataset(client_session: object, domain_url: str, dataset_query: dict, session: str, print_suffix=None, verbose=True, timeout=1800, custom_retry_errors=[]):
     '''
     This API will return a maximum of 2000 records, and this is what you see when you run a question on the browser.
     But this API allows sending parameters in data payload, and we can add a maximum of 2000 values in a parameter.
@@ -15,6 +15,7 @@ async def async_dataset(client_session: object, domain_url: str, dataset_query: 
     :param print_suffix: String
     :param verbose: Print the progress
     :param timeout: Timeout for each request
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON data
     '''
 
@@ -40,7 +41,7 @@ async def async_dataset(client_session: object, domain_url: str, dataset_query: 
         #     raise Exception(query_data['error'])
         # else:
         #     return {'error': query_data['error']}
-        return check_retry_errors(query_data['error'])
+        return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     # Convert data to records (JSON)
     query_data = query_data['data']

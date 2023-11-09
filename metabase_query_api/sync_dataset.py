@@ -8,7 +8,7 @@ from tenacity import *
 from .retry_errors import check_retry_errors
 
 
-def export_dataset(domain_url: str, dataset_query: dict, session: str, data_format='json', verbose=True, timeout=1800):
+def export_dataset(domain_url: str, dataset_query: dict, session: str, data_format='json', verbose=True, timeout=1800, custom_retry_errors=[]):
     '''
     This function helps get data from an unsaved question.
     To support the Retry feature, it will raise some connection errors and server slowdown errors.
@@ -20,6 +20,7 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
     :param data_format: Accepted values are json, xlsx, csv
     :param verbose: Print the progress
     :param timeout: Timeout for each request
+    :param custom_retry_errors: A list of string errors that you want to retry. Default are some PrestoDB errors.
     :return: JSON or Bytes data
     '''
     if verbose:
@@ -59,7 +60,7 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
             #     raise Exception(query_data['error'])
             # else:
             #     return {'error': query_data['error']}
-            return check_retry_errors(query_data['error'])
+            return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     # XLSX, CSV: Success -> content, error -> JSON
     else:
@@ -70,7 +71,7 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
             #     raise Exception(query_data['error'])
             # else:
             #     return {'error': query_data['error']}
-            return check_retry_errors(query_data['error'])
+            return check_retry_errors(error=query_data['error'], custom_retry_errors=custom_retry_errors)
 
     return query_data
 
