@@ -69,6 +69,7 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
                     modified_parameters.append(param.copy())
             modified_parameters_list.append(modified_parameters)
 
+
     elif api_endpoint == 'dataset':
         table_data = parse_dataset_question(url=url, session=session, bulk_filter_slug=bulk_filter_slug, verbose=verbose)
         domain_url = table_data['domain_url']

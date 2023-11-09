@@ -1,4 +1,5 @@
 import json
+from .retry_errors import check_retry_errors
 
 import nest_asyncio
 
@@ -37,13 +38,14 @@ async def async_card_query(client_session: object, domain_url: str, question_id,
 
     query_data = await query_res.json()
 
-    retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m']
+    # retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m', 'Query exceeded the maximum execution time limit of 10.00m', 'Query exceeded the maximum execution time limit of 15.00m', 'Query exceeded the maximum execution time limit of 20.00m']
 
     if 'error' in query_data:
-        if query_data['error'] in retry_error:
-            raise Exception(query_data['error'])
-        else:
-            return {'error': query_data['error']}
+        # if query_data['error'] in retry_error:
+        #     raise Exception(query_data['error'])
+        # else:
+        #     return {'error': query_data['error']}
+        return check_retry_errors(query_data['error'])
 
     # Convert data to records (JSON)
     query_data = query_data['data']

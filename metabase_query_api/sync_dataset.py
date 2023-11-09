@@ -5,6 +5,8 @@ from urllib import parse
 import requests
 from tenacity import *
 
+from .retry_errors import check_retry_errors
+
 
 def export_dataset(domain_url: str, dataset_query: dict, session: str, data_format='json', verbose=True, timeout=1800):
     '''
@@ -47,26 +49,28 @@ def export_dataset(domain_url: str, dataset_query: dict, session: str, data_form
         else:
             query_res.raise_for_status()
 
-    retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m']
+    # retry_error = ['Too many queued queries for "admin"', 'Query exceeded the maximum execution time limit of 5.00m', 'Query exceeded the maximum execution time limit of 10.00m', 'Query exceeded the maximum execution time limit of 15.00m', 'Query exceeded the maximum execution time limit of 20.00m']
 
     # JSON
     if data_format == 'json':
         query_data = query_res.json()
         if 'error' in query_data:
-            if query_data['error'] in retry_error:
-                raise Exception(query_data['error'])
-            else:
-                return {'error': query_data['error']}
+            # if query_data['error'] in retry_error:
+            #     raise Exception(query_data['error'])
+            # else:
+            #     return {'error': query_data['error']}
+            return check_retry_errors(query_data['error'])
 
     # XLSX, CSV: Success -> content, error -> JSON
     else:
         query_data = query_res.content
         if b'"error":' in query_data:
             query_data = query_res.json()
-            if query_data['error'] in retry_error:
-                raise Exception(query_data['error'])
-            else:
-                return {'error': query_data['error']}
+            # if query_data['error'] in retry_error:
+            #     raise Exception(query_data['error'])
+            # else:
+            #     return {'error': query_data['error']}
+            return check_retry_errors(query_data['error'])
 
     return query_data
 
