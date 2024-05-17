@@ -4,7 +4,7 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/tranngocminhhieu/metabase-query-api/issues)
 [![MIT](https://img.shields.io/github/license/tranngocminhhieu/metabase-query-api)](https://github.com/tranngocminhhieu/metabase-query-api/blob/main/LICENSE)
 
-![example-table.png](images%2Fexample-table.png)
+![example-table.png](https://raw.githubusercontent.com/tranngocminhhieu/metabase-query-api/main/images/example-table.png)
 
 This package will help Data workers get data from [Metabase](https://www.metabase.com/) questions more easily and effectively. It only focuses on the [Card Query API](https://www.metabase.com/docs/latest/api/card#post-apicardcard-idqueryexport-format), [Dataset API](https://www.metabase.com/docs/latest/api/dataset#post-apidatasetexport-format) and does not include other Metabase APIs.
 
