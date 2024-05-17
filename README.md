@@ -4,6 +4,8 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://github.com/tranngocminhhieu/metabase-query-api/issues)
 [![MIT](https://img.shields.io/github/license/tranngocminhhieu/metabase-query-api)](https://github.com/tranngocminhhieu/metabase-query-api/blob/main/LICENSE)
 
+![example-table.png](images%2Fexample-table.png)
+
 This package will help Data workers get data from [Metabase](https://www.metabase.com/) questions more easily and effectively. It only focuses on the [Card Query API](https://www.metabase.com/docs/latest/api/card#post-apicardcard-idqueryexport-format), [Dataset API](https://www.metabase.com/docs/latest/api/dataset#post-apidatasetexport-format) and does not include other Metabase APIs.
 
 ## Features
@@ -24,8 +26,8 @@ pip install metabase-query-api
 ## Instruction
 ### Import package
 ```python
-from metabase_query_api.sync_query import export_question
-from metabase_query_api.async_query import export_question_bulk_filter_values
+from metabase_query_api import export_question
+from metabase_query_api import export_question_bulk_filter_values
 import asyncio
 ```
 
@@ -36,6 +38,7 @@ import asyncio
 **Special parameters:**
 - `retry_attempts` defaults to `0`, use it when your Metabase server is often slow.
 - `data_format` defaults to `'json'`, accepted values are `'json'`, `'csv'`, `'xlsx'`.
+- `custom_retry_errors` defaults to `[]`, use it to force retry with errors on you server. There is no need to fill in the full name of the error because the condition is string contains.
 #### Export question data to a JSON variable
 
 ```python
@@ -77,6 +80,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 - `bulk_values_list` is a list of values.
 - `chunk_size` default, and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.
 - `retry_attempts` defaults to `10`, use it when your Metabase server is often slow.
+- `custom_retry_errors` defaults to `[]`, use it to force retry with errors on you server. There is no need to fill in the full name of the error because the condition is string contains.
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
 

@@ -10,6 +10,9 @@ retry_errors = [
 
     ## Static errors:
     'Too many queued queries for "admin"'
+    
+    ## Max requests queued per destination 1024 exceeded for HttpDestination[http://10.46.23.9:8080]@56f7d1bb,queue=1024,pool=DuplexConnectionPool@15a86dc3[c=1/250/250,a=249,i=0]
+    'Max requests queued per destination'
 ]
 
 def check_retry_errors(error, custom_retry_errors=[]):

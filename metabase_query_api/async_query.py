@@ -97,7 +97,8 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
                                               parameters=payload,
                                               print_suffix=print_suffix,
                                               verbose=verbose,
-                                              timeout=timeout)
+                                              timeout=timeout,
+                                              custom_retry_errors=custom_retry_errors)
             elif api_endpoint == 'dataset':
                 return await async_dataset(client_session=client_session,
                                            domain_url=domain_url,
@@ -105,10 +106,15 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
                                            session=session,
                                            print_suffix=print_suffix,
                                            verbose=verbose,
-                                           timeout=timeout)
+                                           timeout=timeout,
+                                           custom_retry_errors=custom_retry_errors)
 
         # Get data
         query_records = await get_query_data()
+
+        # Test error
+        if print_suffix == '(2/2)':
+            raise Exception('Test Error')
 
         # Raise error by user
         if 'error' in query_records:
@@ -142,7 +148,19 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
             await asyncio.sleep(1)
 
     # Combine tasks results
-    res = await asyncio.gather(*tasks)
+    res = await asyncio.gather(*tasks, return_exceptions=True) # return_exceptions to handle error and send user successful data
     await client_session.close()
 
-    return sum(res, [])
+    success_results = []
+    has_error = False
+    for idx, result in enumerate(res):
+        idx += 1
+        if isinstance(result, Exception):
+            print(f"Task ({idx}/{total}) error: {result}")
+            has_error = True
+        else:
+            success_results.append(result)
+    if has_error:
+        print('There were error parts. You will receive the successfully retrieved data. Please filter out the parts that have not been retrieved so that you can run them again.')
+
+    return sum(success_results, [])
