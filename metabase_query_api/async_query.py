@@ -112,10 +112,6 @@ async def export_question_bulk_filter_values(url: str, session: str, bulk_filter
         # Get data
         query_records = await get_query_data()
 
-        # Test error
-        if print_suffix == '(2/2)':
-            raise Exception('Test Error')
-
         # Raise error by user
         if 'error' in query_records:
             raise Exception(query_records['error'])

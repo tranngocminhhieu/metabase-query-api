@@ -35,11 +35,13 @@ import asyncio
 - Copy the question URL in the browser. Note that you must fill in the necessary parameters before copying.
 - Use a different API to get the [Metabase Session](https://www.metabase.com/docs/latest/api/session#post-apisession). Or you can use this [Chrome extension](https://chrome.google.com/webstore/detail/cookie-tab-viewer/fdlghnedhhdgjjfgdpgpaaiddipafhgk) to get it.
 
-**Special parameters:**
+#### Export question data to a JSON variable
+
+**Parameters:**
 - `retry_attempts` defaults to `0`, use it when your Metabase server is often slow.
 - `data_format` defaults to `'json'`, accepted values are `'json'`, `'csv'`, `'xlsx'`.
 - `custom_retry_errors` defaults to `[]`, use it to force retry with errors on you server. There is no need to fill in the full name of the error because the condition is string contains.
-#### Export question data to a JSON variable
+
 
 ```python
 session = 'c65f769b-eb4a-4a12-b0be-9596294919fa'
@@ -75,7 +77,7 @@ It then sends multiple asynchronous requests to get the data. Once completed, th
 
 **⚠️ Note:** Using this function may slow down your Metabase server.
 
-**Special parameters:**
+**Parameters:**
 - `bulk_filter_slug`: Saved question -> parameter slug in URL, unsaved question -> Field Name as field_name.
 - `bulk_values_list` is a list of values.
 - `chunk_size` default, and the maximum is  `2000`. If your data has duplicates for each filter value, reduce the chunk size. Because each piece of data only contains 2000 lines.

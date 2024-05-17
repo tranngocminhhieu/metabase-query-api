@@ -1,3 +1,6 @@
+# 1.1.2
+Remove testing code
+
 # 1.1.1
 - `export_question_bulk_filter_values` will return successful paths if there were error paths.
 - Add `export_question_bulk_filter_values` and `export_question` to the `__init__.py` so you can import shorter.
