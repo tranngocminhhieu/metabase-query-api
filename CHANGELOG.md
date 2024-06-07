@@ -1,3 +1,7 @@
+# 1.1.3
+- Add `presto_errors` variable to `retry_errors.py`.
+- Remove default error from `check_retry_errors` function.
+
 # 1.1.2
 Remove testing code
 
